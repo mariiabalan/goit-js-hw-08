@@ -45,46 +45,40 @@ const images = [
         description: 'Lighthouse Coast Sea',
     },
 ];
-
 const gallery = document.querySelector('.gallery');
+const fragments = document.createDocumentFragment();
 
-const createGalleryItems = (images) => {
-    return images.map(({ preview, original, description }) => {
-        const li = document.createElement('li');
-        li.classList.add('gallery-item');
+images.forEach((image) => {
 
-        const a = document.createElement('a');
-        a.classList.add('gallery-link');
-        a.href = original;
+const listItem = document.createElement('li');
 
-        const img = document.createElement('img');
-        img.classList.add('gallery-image');
-        img.src = preview;
-        img.dataset.source = original;
-        img.alt = description;
+const link = document.createElement('a');
+link.classList.add('gallery-link');
+link.href = image.original;
 
-        a.appendChild(img);
-        li.appendChild(a);
+const img = document.createElement('img');
+img.style.width = '360px';
+img.classList.add('gallery-image');
+img.src = image.preview;
+img.dataset.source = image.original;
+img.alt = image.description;
 
-        return li;
-    });
-};
+link.appendChild(img);
+listItem.appendChild(link);
+fragments.appendChild(listItem);
 
-const renderGallery = (items) => {
-    gallery.innerHTML = ''; // Очистка перед додаванням нових елементів
-    gallery.append(...items);
-};
+});
 
-const galleryItems = createGalleryItems(images);
-renderGallery(galleryItems);
+gallery.appendChild(fragments);
 
 gallery.addEventListener('click', (event) => {
     event.preventDefault();
-    if (event.target.nodeName === 'IMG') {
-        const source = event.target.dataset.source;
-        const instance = basicLightbox.create(`
-            <img src="${source}" width="100%" height="100%">
-        `);
-        instance.show();
-    }
+    if(event.target.nodeName !== 'IMG'){
+        return;
+    };
+    
+    const modalContent = `<img src="${event.target.dataset.source}" alt="${event.target.alt}"/>`;
+    const instance = basicLightbox.create(modalContent);
+
+    instance.show();
 });
